@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="เว็บไซต์สุ่มเมนูอาหาร เลือกไม่ถูกว่าจะกินอะไรดี ให้เราช่วยสุ่มให้">
+  <title>กินอะไรดี? | Food Randomizer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #111318;
+      --panel: #1b1e26;
+      --panel-soft: #232733;
+      --text: #f5f6fa;
+      --muted: #a5adbd;
+      --accent: #ffb84d;
+      --accent-2: #ff7b54;
+      --border: rgba(255,255,255,.09);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Kanit", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 15% 0%, rgba(255,184,77,.12), transparent 32rem),
+        radial-gradient(circle at 100% 25%, rgba(255,123,84,.10), transparent 28rem),
+        var(--bg);
+    }
+    .navbar {
+      width: 100%;
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 16px max(5%, calc((100% - 1120px)/2));
+      border-bottom: 1px solid var(--border);
+      background: rgba(17,19,24,.82);
+      backdrop-filter: blur(14px);
+    }
+    .brand { display: flex; align-items: center; gap: 11px; font-size: 1.25rem; font-weight: 600; }
+    .brand-icon {
+      display: grid; place-items: center; width: 42px; height: 42px;
+      border-radius: 14px; background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #21170d; font-size: 1.35rem;
+    }
+    .nav-tag { color: var(--muted); font-size: .92rem; }
+    main { width: min(100% - 36px, 1000px); margin: 0 auto; padding: 58px 0 42px; }
+    .intro { text-align: center; margin-bottom: 32px; }
+    .eyebrow {
+      display: inline-block; padding: 6px 13px; border: 1px solid rgba(255,184,77,.25);
+      border-radius: 999px; color: var(--accent); background: rgba(255,184,77,.08);
+      font-size: .86rem; margin-bottom: 14px;
+    }
+    h1 { margin: 0; font-size: clamp(2.1rem, 5vw, 3.6rem); line-height: 1.2; letter-spacing: -.6px; }
+    h1 span { color: var(--accent); }
+    .intro p { max-width: 580px; margin: 15px auto 0; color: var(--muted); line-height: 1.8; }
+    .food-card {
+      display: grid; grid-template-columns: 1.05fr 1fr; overflow: hidden;
+      background: linear-gradient(145deg, rgba(35,39,51,.96), rgba(27,30,38,.98));
+      border: 1px solid var(--border); border-radius: 26px;
+      box-shadow: 0 24px 70px rgba(0,0,0,.32);
+    }
+    .food-image-wrap { min-height: 360px; position: relative; background: #292d36; }
+    .food-image { width: 100%; height: 100%; min-height: 360px; object-fit: cover; display: block; }
+    .image-label {
+      position: absolute; left: 18px; top: 18px; padding: 8px 13px; border-radius: 999px;
+      background: rgba(17,19,24,.78); border: 1px solid rgba(255,255,255,.16); font-size: .84rem;
+    }
+    .food-info { display: flex; flex-direction: column; justify-content: center; padding: clamp(24px, 4vw, 44px); }
+    .category { color: var(--accent); font-size: .9rem; font-weight: 500; margin-bottom: 8px; }
+    h2 { margin: 0; font-size: clamp(1.8rem, 3vw, 2.5rem); line-height: 1.3; }
+    .description { color: var(--muted); line-height: 1.9; margin: 14px 0 22px; }
+    .price-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 26px; }
+    .price { color: var(--accent); font-size: 2rem; font-weight: 600; }
+    .currency { color: var(--muted); font-size: .9rem; }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; }
+    button {
+      font: inherit; cursor: pointer; border: 0; border-radius: 13px; padding: 13px 19px;
+      transition: transform .18s ease, filter .18s ease, background .18s ease;
+    }
+    button:hover { transform: translateY(-2px); filter: brightness(1.06); }
+    button:focus-visible { outline: 3px solid white; outline-offset: 3px; }
+    .random-btn { color: #26180a; font-weight: 600; background: linear-gradient(135deg, var(--accent), #ff9254); flex: 1; }
+    .random-btn span { margin-right: 7px; }
+    .secondary-btn { color: var(--text); border: 1px solid var(--border); background: rgba(255,255,255,.04); }
+    .menu-section { margin-top: 48px; }
+    .section-heading { display: flex; justify-content: space-between; align-items: end; gap: 14px; margin-bottom: 18px; }
+    .section-heading h3 { margin: 0; font-size: 1.35rem; }
+    .section-heading p { color: var(--muted); margin: 0; font-size: .9rem; }
+    .menu-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .menu-item {
+      border: 1px solid var(--border); background: rgba(27,30,38,.75); border-radius: 17px;
+      padding: 16px; min-width: 0;
+    }
+    .menu-emoji { font-size: 1.5rem; margin-bottom: 8px; }
+    .menu-item h4 { margin: 0 0 5px; font-size: 1rem; font-weight: 500; }
+    .menu-item p { margin: 0; color: var(--accent); font-size: .9rem; }
+    footer { text-align: center; color: #7f8797; font-size: .85rem; padding: 0 18px 28px; }
+    @media (max-width: 760px) {
+      main { padding-top: 38px; }
+      .food-card { grid-template-columns: 1fr; }
+      .food-image-wrap, .food-image { min-height: 250px; max-height: 310px; }
+      .food-info { padding: 26px; }
+      .menu-grid { grid-template-columns: repeat(2, 1fr); }
+      .section-heading { align-items: start; flex-direction: column; }
+    }
+    @media (max-width: 420px) {
+      .navbar { padding: 13px 18px; }
+      .nav-tag { display: none; }
+      main { width: min(100% - 24px, 1000px); }
+      .food-image-wrap, .food-image { min-height: 220px; }
+      .actions { flex-direction: column; }
+      .actions button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar" aria-label="เมนูหลัก">
+    <div class="brand"><div class="brand-icon" aria-hidden="true">🍜</div><span>กินอะไรดี?</span></div>
+    <div class="nav-tag">Food Randomizer · วันนี้กินอะไรดี</div>
+  </nav>
+
+  <main>
+    <header class="intro">
+      <div class="eyebrow">YOUR DAILY FOOD HELPER</div>
+      <h1>คิดไม่ออกใช่ไหมว่า<br><span>วันนี้กินอะไรดี?</span></h1>
+      <p>ไม่ต้องเสียเวลาเลือกนาน ให้เราช่วยสุ่มเมนูอร่อย ๆ ให้คุณ มีทั้งชื่อเมนู คำอธิบาย และราคาในที่เดียว</p>
+    </header>
+
+    <section class="food-card" aria-live="polite" aria-label="เมนูอาหารที่สุ่มได้">
+      <div class="food-image-wrap">
+        <img class="food-image" id="food-image" src="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=1000&q=85" alt="ภาพเมนูอาหาร">
+        <div class="image-label">เมนูแนะนำวันนี้</div>
+      </div>
+      <div class="food-info">
+        <div class="category" id="food-category">เมนูเส้น · อาหารจานเดียว</div>
+        <h2 id="food-name">ก๋วยเตี๋ยว</h2>
+        <p class="description" id="food-description">เมนูเส้นน้ำซุปร้อน ๆ เลือกใส่เนื้อสัตว์และผักได้ตามชอบ อิ่มง่ายในทุกมื้อ</p>
+        <div class="price-row"><span class="price" id="food-price">50</span><span class="currency">บาท / จาน</span></div>
+        <div class="actions">
+          <button class="random-btn" id="random-btn" type="button"><span>🎲</span>สุ่มเมนูใหม่</button>
+          <button class="secondary-btn" id="surprise-btn" type="button">สุ่มอีกครั้ง</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="menu-section">
+      <div class="section-heading">
+        <h3>ตัวอย่างเมนูในระบบ</h3>
+        <p id="menu-count">มีเมนูให้สุ่ม 8 รายการ</p>
+      </div>
+      <div class="menu-grid" id="menu-grid"></div>
+    </section>
+  </main>
+  <footer>ทำให้การเลือกมื้อถัดไปเป็นเรื่องง่าย · Food Randomizer</footer>
+
+  <script>
+    // รายการอาหารทั้งหมด สามารถเพิ่มเมนูใหม่ใน array นี้ได้
+    const foods = [
+      {
+        name: "ก๋วยเตี๋ยว", category: "เมนูเส้น · อาหารจานเดียว", price: 50, emoji: "🍜",
+        description: "เมนูเส้นน้ำซุปร้อน ๆ เลือกใส่เนื้อสัตว์และผักได้ตามชอบ อิ่มง่ายในทุกมื้อ",
+        image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=1000&q=85",
+        alt: "ชามก๋วยเตี๋ยว"
+      },
+      {
+        name: "ข้าวกะเพรา", category: "อาหารไทย · รสจัดจ้าน", price: 55, emoji: "🍳",
+        description: "ข้าวสวยร้อน ๆ กับผัดกะเพราหอมใบกะเพรา จะเพิ่มไข่ดาวก็เข้ากันสุด ๆ",
+        image: "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=1000&q=85",
+        alt: "อาหารจานข้าว"
+      },
+      {
+        name: "ข้าวผัด", category: "อาหารจานเดียว · ทำง่าย", price: 50, emoji: "🍚",
+        description: "ข้าวผัดหอมกระทะ ปรุงรสกลมกล่อม กินคู่แตงกวาและมะนาวได้อย่างลงตัว",
+        image: "https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=1000&q=85",
+        alt: "ข้าวผัดในจาน"
+      },
+      {
+        name: "ผัดไทย", category: "อาหารไทย · เมนูเส้น", price: 60, emoji: "🥢",
+        description: "เส้นผัดซอสรสเปรี้ยวหวาน ใส่ถั่วงอกและถั่วลิสง เพิ่มมะนาวเพื่อรสชาติที่สดชื่น",
+        image: "https://images.unsplash.com/photo-1559314809-0d155014e29e?auto=format&fit=crop&w=1000&q=85",
+        alt: "เมนูผัดเส้น"
+      },
+      {
+        name: "ข้าวมันไก่", category: "อาหารจานเดียว · เมนูยอดนิยม", price: 55, emoji: "🍗",
+        description: "ไก่นุ่มกับข้าวมันหอม ๆ เสิร์ฟพร้อมน้ำจิ้มรสเด็ดและน้ำซุปร้อน ๆ",
+        image: "https://img.wongnai.com/p/1920x0/2017/06/22/bbf899f7ab4341dea4aec6330c2afafd.jpg",
+        alt: "ข้าวกับเนื้อไก่"
+      },
+      {
+        name: "ส้มตำ", category: "อาหารอีสาน · รสแซ่บ", price: 45, emoji: "🥗",
+        description: "มะละกอกรอบคลุกเคล้าเครื่องปรุงรสเปรี้ยว เผ็ด หวาน กินคู่กับข้าวเหนียวก็อร่อย",
+        image: "https://images.unsplash.com/photo-1559847844-5315695dadae?auto=format&fit=crop&w=1000&q=85",
+        alt: "สลัดและผักสด"
+      },
+      {
+        name: "เบอร์เกอร์", category: "อาหารตะวันตก · กินสะดวก", price: 89, emoji: "🍔",
+        description: "ขนมปังนุ่มประกบเนื้อและผักสด เหมาะกับวันที่อยากเปลี่ยนบรรยากาศจากอาหารจานข้าว",
+        image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1000&q=85",
+        alt: "เบอร์เกอร์"
+      },
+      {
+        name: "ข้าวไข่เจียว", category: "อาหารจานเดียว · ประหยัด", price: 35, emoji: "🍳",
+        description: "ไข่เจียวร้อน ๆ กรอบนอกนุ่มใน เสิร์ฟกับข้าวสวย เป็นเมนูง่าย ๆ ที่กินได้เสมอ",
+        image: "https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=1000&q=85",
+        alt: "อาหารไข่และข้าว"
+      }
+    ];
+
+    const image = document.getElementById("food-image");
+    const name = document.getElementById("food-name");
+    const category = document.getElementById("food-category");
+    const description = document.getElementById("food-description");
+    const price = document.getElementById("food-price");
+    const menuGrid = document.getElementById("menu-grid");
+    let currentIndex = 0;
+
+    // เปลี่ยนรูป ชื่อ คำอธิบาย และราคาให้ตรงกับเมนูที่เลือก
+    function showFood(index) {
+      const food = foods[index];
+      currentIndex = index;
+      image.src = food.image;
+      image.alt = food.alt;
+      name.textContent = food.name;
+      category.textContent = food.category;
+      description.textContent = food.description;
+      price.textContent = food.price.toLocaleString("th-TH");
+    }
+
+    // สุ่มเมนูโดยพยายามไม่ให้ซ้ำกับเมนูปัจจุบัน
+    function randomFood() {
+      let nextIndex = Math.floor(Math.random() * foods.length);
+      if (foods.length > 1) {
+        while (nextIndex === currentIndex) {
+          nextIndex = Math.floor(Math.random() * foods.length);
+        }
+      }
+      showFood(nextIndex);
+    }
+
+    // สร้างรายการเมนูทั้งหมดจากข้อมูลใน foods
+    function renderMenuList() {
+      menuGrid.innerHTML = "";
+      foods.forEach((food) => {
+        const item = document.createElement("article");
+        item.className = "menu-item";
+        const emoji = document.createElement("div");
+        emoji.className = "menu-emoji";
+        emoji.textContent = food.emoji;
+        const title = document.createElement("h4");
+        title.textContent = food.name;
+        const cost = document.createElement("p");
+        cost.textContent = `${food.price} บาท`;
+        item.append(emoji, title, cost);
+        menuGrid.appendChild(item);
+      });
+      document.getElementById("menu-count").textContent = `มีเมนูให้สุ่ม ${foods.length} รายการ`;
+    }
+
+    document.getElementById("random-btn").addEventListener("click", randomFood);
+    document.getElementById("surprise-btn").addEventListener("click", randomFood);
+    renderMenuList();
+  </script>
+</body>
+</html>
